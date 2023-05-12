@@ -2,65 +2,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sounddevice as sd
 
-t = np.linspace(0, 3 ,(3*1024))
+t = np.linspace(0, 3,(9*1024))
 
-C3 = 130.81
-D3 = 146.83
-E3 = 164.81
-F3 = 174.61
-G3 = 196
-A3 = 220
-B3 = 246.93
-
-f3 = [130.81,146.83,164.81,174.61,196,220,246.93]
-
-f4 = [261.63,293.66,329.63,349.23,392,440,493.88]
-
-C4 = 261.63
-D4 = 293.66
-E4 = 329.63
-F4 = 349.23
-G4 = 392
-A4 = 440
-B4 = 493.88
-
-notes = [
-    [ 65.41, 130.81, 261.63, 523.25],  # C
-    [ 73.42, 146.83, 293.66, 587.33],  # D
-    [ 82.41, 164.81, 329.63, 659.25],  # E
-    [ 87.31, 174.61, 349.23, 698.46],  # F
-    [ 98.00, 196.00, 392.00, 783.99],  # G
-    [110.00, 220.00, 440.00, 880.00],  # A
-    [123.47, 246.94, 493.88, 987.77],  # B
-]
+notes = [261.63, 293.66, 329.63,349.23,392,440,493.88,261.63,233.08, 261.63, 277.18, 311.13, 349.23, 369.99, 415.30, 466.16]
 
 
-def generate_song(time,number_Of_Notes):
-    octave1 = []
-    octave2 = []
-    for i in range (number_Of_Notes):
-        index1 , index2 = np.random.randint(0,len(f3)-1, 2)
-        octave1 += [f3[index1]]
-        octave2 += [f4[index2]]
+
+
+def generate_Song (notes):
+    t_start = 0
+    t_end = 0.1875
     
-    s1 = np.sin(2*np.pi*octave1*time)
-    s2 = np.sin(2*np.pi*octave2*time)
-    return s1 , s2
-
-    
+    x = 0
+    for i in range(16):
+        x += np.reshape(np.sin( 2 * np.pi * notes[i] * t) * [t>=t_start]*[t<=t_end], np.shape(t))
+        t_start += 0.234375
+        t_end += 0.234375
+    return x
     
 
-duration = 3
+def play_Song(x):
+    plt.plot(t, x)
+    sd.play(x,4*1024)
 
-T = 0.5
-
-x =( (np.sin(2 * np.pi * C3*t )+(np.sin(2*np.pi*C4*t))))
-
-
-plt.plot(t, x)
-sd.play(x,3*1024)
-
-
-
-
-
+x = generate_Song(notes)
+play_Song(x)
